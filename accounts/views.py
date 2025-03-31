@@ -1,9 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .forms import CustomUserCreationForm
 
 def signup(request):
     if request.method == 'POST':
-        pass
+        form = CustomUserCreationForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            return redirect('posts:index')
     else:
         form = CustomUserCreationForm()
 
