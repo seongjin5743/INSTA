@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-$s+xl3sbw&0)@_#81pg4l6od_quwgjxtj0_6!39&!#6ra@j)sy'
+SECRET_KEY = 'django-insecure-65%#uhlv4$p(1heu^5(hn$4=)kiizw_v+_3vqg%4gopmwqa3)l'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'posts',
     'django_bootstrap5',
+    'accounts',
 ]
 
 MIDDLEWARE = [
@@ -107,7 +108,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+_TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
@@ -124,8 +125,10 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# 실제 폴더 경로
+# 업로드한 사진을 저장한 위치 (실제 폴더 경로)
 MEDIA_ROOT = BASE_DIR / 'media'
 
 # 미디어 경로를 처리할 URL
 MEDIA_URL = '/media/'
+
+AUTH_USER_MODEL = 'accounts.User'
