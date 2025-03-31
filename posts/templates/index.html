@@ -2,7 +2,6 @@
 
 {% block body %}
     {% for post in posts %}
-        {{post.content}}
-        {{post.image}}
+        {% include '_card.html' %}
     {% endfor %}
 {% endblock %}
