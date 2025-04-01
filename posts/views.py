@@ -48,3 +48,13 @@ def comment_create(request, post_id):
         comment.post_id = post_id
         comment.save()
         return redirect('posts:index')
+@login_required
+def like(request, post_id):
+    user = request.user
+    post = Post.objects.get(id=post_id)
+    
+    if user in post.like_users.all():
+        post.like_users.remove(user)
+    else:
+        post.like_users.add(user)
+    return redirect('posts:index')
