@@ -3,6 +3,7 @@ from .forms import CustomUserCreationForm, CustomAuthenticationForm  # 커스텀
 from django.contrib.auth import login as auth_login  # 사용자 로그인 처리 함수
 from django.contrib.auth import logout as auth_logout  # 사용자 로그아웃 처리 함수
 from .models import User
+from django.contrib.auth.decorators import login_required
 
 # 회원가입 뷰
 def signup(request):
@@ -35,6 +36,7 @@ def login(request):
     return render(request, 'login.html', context)  # 로그인 템플릿 렌더링
 
 # 로그아웃 뷰
+@login_required
 def logout(request):
     auth_logout(request)  # 사용자 로그아웃 처리
     return redirect('posts:index')  # 로그아웃 후 게시물 목록 페이지로 리다이렉트
@@ -45,3 +47,16 @@ def profile(request, username):
         'user_profile': user_profile,
     }
     return render(request, 'profile.html', context)
+
+def follow(request, username):
+    me = request.user
+    you = User.objects.get(username=username)
+
+    if me == you:
+        return redirect('accounts:profile', username)
+
+    if me in you.followers.all():
+        you.followers.remove(me)
+    else:
+        you.followings.add(me)
+    return redirect('accounts:profile', username)
