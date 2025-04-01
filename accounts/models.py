@@ -10,5 +10,9 @@ class User(AbstractUser):
         crop=['middle', 'center'],  # 이미지 크롭 위치
         upload_to='profile',  # 파일 업로드 경로
     )
-    followings = models.ManyToManyField('self', related_name='followers', symmetrical=False)
+    followings = models.ManyToManyField(
+        'self',  # 자기 자신과의 관계를 정의
+        related_name='followers',  # 역참조 시 사용할 이름
+        symmetrical=False  # 대칭 관계가 아님 (팔로우/팔로워 관계)
+    )
     

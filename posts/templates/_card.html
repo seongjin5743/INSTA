@@ -1,44 +1,62 @@
-{% load django_bootstrap5 %}
+{% load django_bootstrap5 %}  <!-- django-bootstrap5 템플릿 태그 로드 -->
+
 <div class="card my-3 col-12 col-md-6 col-xl-4">
-<!-- <div class="card my-3 col-12 p-0 offset-md-3 col-md-6"></div> -->
+    <!-- 카드 헤더: 게시물 작성자 정보 -->
     <div class="card-header">
-      <img src="{{post.user.profile_image.url}}" alt="" width="30px" class='rounded-circle'>
-      <a href="{% url 'accounts:profile' post.user.username %}">{{post.user.username}}</a>
+        <!-- 작성자 프로필 이미지 -->
+        <img src="{{post.user.profile_image.url}}" alt="" width="30px" class='rounded-circle'>
+        <!-- 작성자 프로필 페이지 링크 -->
+        <a href="{% url 'accounts:profile' post.user.username %}">{{post.user.username}}</a>
     </div>
+
+    <!-- 게시물 이미지 -->
     <img src="{{post.image.url}}" class="" alt="...">
+
+    <!-- 카드 본문 -->
     <div class="card-body">
-      {% if user in post.like_users.all %}
-        <a href="{% url 'posts:like' post.id %}" class="text-reset text-decoration-none">
-          <i class="bi bi-heart-fill" style="color: red;"></i>
-        </a>
-      {% else %}
-        <a href="{% url 'posts:like' post.id %}" class="text-reset text-decoration-none">
-          <i class="bi bi-heart"></i>
-        </a>
-      {% endif %}
-      <span>{{post.like_users.all|length}}명이 좋아합니다.</span>
-      <p class="card-text">{{post.content}}</p>
-      <p class="card-text">{{post.created_at|timesince}}</p>
-      <a href="{% url 'posts:detail' post.id %}" class="btn btn-primary">Detail</a>
+        <!-- 좋아요 상태에 따른 아이콘 표시 -->
+        {% if user in post.like_users.all %}
+            <!-- 좋아요 취소 링크 -->
+            <a href="{% url 'posts:like' post.id %}" class="text-reset text-decoration-none">
+                <i class="bi bi-heart-fill" style="color: red;"></i>
+            </a>
+        {% else %}
+            <!-- 좋아요 추가 링크 -->
+            <a href="{% url 'posts:like' post.id %}" class="text-reset text-decoration-none">
+                <i class="bi bi-heart"></i>
+            </a>
+        {% endif %}
+        <!-- 좋아요 수 표시 -->
+        <span>{{post.like_users.all|length}}명이 좋아합니다.</span>
+        <!-- 게시물 내용 -->
+        <p class="card-text">{{post.content}}</p>
+        <!-- 게시물 작성 시간 -->
+        <p class="card-text">{{post.created_at|timesince}}</p>
+        <!-- 게시물 상세 페이지 링크 -->
+        <a href="{% url 'posts:detail' post.id %}" class="btn btn-primary">Detail</a>
     </div>
+
+    <!-- 카드 푸터 -->
     <div class="card-footer">
-      {% if user.is_authenticated %}
-        <form action="{% url 'posts:comment_create' post.id %}" method="POST">
-          {% csrf_token %}
-          <div class="row">
-            <div class="col-9">
-              {% bootstrap_form form show_label=False wrapper_class='' %}
-            </div>
-            <div class="col-2">
-              <input type="submit" class="btn btn-primary">
-            </div>
-          </div>
-        </form>
-      {% endif %}
-      <div class="mt-2">
-        {% for comment in post.comment_set.all %}
-          <p>{{comment.user}} : {{comment.content}}</p>
-        {% endfor %}
-      </div>
+        {% if user.is_authenticated %}
+            <!-- 댓글 작성 폼 -->
+            <form action="{% url 'posts:comment_create' post.id %}" method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-9">
+                        {% bootstrap_form form show_label=False wrapper_class='' %}
+                    </div>
+                    <div class="col-2">
+                        <input type="submit" class="btn btn-primary">
+                    </div>
+                </div>
+            </form>
+        {% endif %}
+        <!-- 댓글 목록 -->
+        <div class="mt-2">
+            {% for comment in post.comment_set.all %}
+                <p>{{comment.user}} : {{comment.content}}</p>
+            {% endfor %}
+        </div>
     </div>
 </div>
