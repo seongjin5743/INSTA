@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect  # 템플릿 렌더링 및 리다�
 from .forms import CustomUserCreationForm, CustomAuthenticationForm  # 커스텀 회원가입 및 로그인 폼
 from django.contrib.auth import login as auth_login  # 사용자 로그인 처리 함수
 from django.contrib.auth import logout as auth_logout  # 사용자 로그아웃 처리 함수
+from .models import User
 
 # 회원가입 뷰
 def signup(request):
@@ -37,3 +38,10 @@ def login(request):
 def logout(request):
     auth_logout(request)  # 사용자 로그아웃 처리
     return redirect('posts:index')  # 로그아웃 후 게시물 목록 페이지로 리다이렉트
+
+def profile(request, username):
+    user_profile = User.objects.get(username=username)
+    context = {
+        'user_profile': user_profile,
+    }
+    return render(request, 'profile.html', context)
