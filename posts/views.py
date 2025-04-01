@@ -59,3 +59,13 @@ def like(request, post_id):
     else:
         post.like_users.add(user)
     return redirect('posts:index')
+
+def feed(request):
+    followings = request.user.followings.all()
+    posts = Post.objects.filter(user__in=followings)
+    form = CommentForm()
+    context = {
+        'posts': posts,
+        'form': form,
+    }
+    return render(request, 'index.html', context)

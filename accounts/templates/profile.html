@@ -11,9 +11,15 @@
                     {{user_profile.username}}
                 </div>
                 {% if user != user_profile %}
-                    <div class="col-9">
-                        <a href="{% url 'accounts:follow' user_profile.username %}" class="btn btn-primary">Follow</a>
-                    </div>
+                    {% if user in user_profile.followers.all %}
+                        <div class="col-9">
+                            <a href="{% url 'accounts:follow' user_profile.username %}" class="btn btn-secondary">팔로우 취소</a>
+                        </div>
+                    {% else %}
+                        <div class="col-9">
+                            <a href="{% url 'accounts:follow' user_profile.username %}" class="btn btn-primary">팔로우</a>
+                        </div>
+                    {% endif %}
                 {% endif %}
             </div>
             <div class="row">

@@ -58,5 +58,5 @@ def follow(request, username):
     if me in you.followers.all():
         you.followers.remove(me)
     else:
-        you.followings.add(me)
+        you.followers.add(me)
     return redirect('accounts:profile', username)

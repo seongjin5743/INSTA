@@ -16,6 +16,12 @@
             <li class="nav-item">
               <a class="nav-link" href="{% url 'accounts:logout' %}">Logout</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'posts:feed' %}">Feed</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link disabled">{{user}}</a>
+            </li>
           {% else %}
           <li class="nav-item">
             <a class="nav-link" href="{% url 'accounts:signup' %}">SignUp</a>
