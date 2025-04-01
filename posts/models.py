@@ -16,3 +16,8 @@ class Post(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)  
     # 게시물 작성자 (User 모델과의 외래키 관계)
     # 작성자가 삭제되면 해당 게시물도 삭제됨
+
+class Comment(models.Model):
+    content = models.CharField(max_length=200)
+    post = models.ForeignKey(Post, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)

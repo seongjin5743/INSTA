@@ -31,4 +31,8 @@ def create(request):
 
 # 게시물 상세(detail) 뷰
 def detail(request, id):
-    pass
+    post = Post.objects.get(id=id)
+    context = {
+        'post': post,
+    }
+    return render(request, 'detail.html', context)

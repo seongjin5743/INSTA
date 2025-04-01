@@ -8,6 +8,6 @@
     <div class="card-body">
       <p class="card-text">{{post.content}}</p>
       <p class="card-text">{{post.created_at|timesince}}</p>
-      <a href="" class="btn btn-primary">Detail</a>
+      <a href="{% url 'posts:detail' post.id %}" class="btn btn-primary">Detail</a>
     </div>
 </div>
