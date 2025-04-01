@@ -1,13 +1,14 @@
 from django.shortcuts import render, redirect
 from .models import Post
-from .forms import PostForm
+from .forms import PostForm, CommentForm
 from django.contrib.auth.decorators import login_required
 
 # 게시물 목록(index) 뷰
 def index(request):
     posts = Post.objects.all()  # 모든 게시물 가져오기
-
+    form = CommentForm()
     context = {
+        'form': form,
         'posts': posts,  # 템플릿에 전달할 게시물 리스트
     }
     return render(request, 'index.html', context)  # 게시물 목록 템플릿 렌더링
@@ -36,3 +37,14 @@ def detail(request, id):
         'post': post,
     }
     return render(request, 'detail.html', context)
+
+@login_required
+def comment_create(request, post_id):
+    form = CommentForm(request.POST)
+
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.user = request.user
+        comment.post_id = post_id
+        comment.save()
+        return redirect('posts:index')
