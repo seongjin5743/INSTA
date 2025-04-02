@@ -1,9 +1,39 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %}  <!-- base.html을 확장하여 기본 레이아웃 사용 -->
 
 {% block body %}
     <div class="row">
-        {% for post in posts %}
-            {% include '_card.html' %}
+        {% for post in posts %}  <!-- posts 리스트를 반복하여 각 게시물 렌더링 -->
+            {% include '_card.html' %}  <!-- 각 게시물에 대해 _card.html 템플릿 포함 -->
         {% endfor %}
     </div>
+
+    <script>
+        // 모든 좋아요 버튼 선택
+        let like_btns = document.querySelectorAll('i.like')
+        like_btns.forEach(function(like_btn){
+            // 각 좋아요 버튼에 클릭 이벤트 리스너 추가
+            like_btn.addEventListener('click', function(e){
+                const postId = e.target.dataset.postId  // 클릭된 버튼의 게시물 ID 가져오기
+                likeRequest(like_btn, postId)  // 좋아요 요청 함수 호출
+            })
+        })
+
+        // 좋아요 요청 함수 (비동기 처리)
+        let likeRequest = async(btn, postId) => {
+            let likeURL = `/posts/${postId}/like-async`  // 좋아요 요청 URL 생성
+            let res = await fetch(likeURL)  // 서버에 비동기 요청 전송
+            let result = await res.json()  // 서버 응답을 JSON으로 파싱
+            if (result.status) {  // 좋아요 상태가 활성화된 경우
+                btn.style.color = 'red'  // 버튼 색상을 빨간색으로 변경
+                btn.classList.remove('bi-heart')  // 빈 하트 아이콘 제거
+                btn.classList.add('bi-heart-fill')  // 채워진 하트 아이콘 추가
+            }
+            else {  // 좋아요 상태가 비활성화된 경우
+                btn.style.color = 'black'  // 버튼 색상을 검은색으로 변경
+                btn.classList.add('bi-heart')  // 빈 하트 아이콘 추가
+                btn.classList.remove('bi-heart-fill')  // 채워진 하트 아이콘 제거
+            }
+            btn.querySelector('span').innerHTML = result.count  // 좋아요 수 업데이트
+        }
+    </script>
 {% endblock %}

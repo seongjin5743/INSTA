@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect  # 템플릿 렌더링 및 리다이렉트를 위한 함수
-from .models import Post  # Post 모델 가져오기
+from .models import Post , Comment  # Post 모델 가져오기
 from .forms import PostForm, CommentForm  # 게시물 및 댓글 폼 가져오기
 from django.contrib.auth.decorators import login_required  # 로그인 여부를 확인하는 데코레이터
+from django.http import JsonResponse
 
 # 게시물 목록(index) 뷰
 def index(request):
@@ -33,21 +34,33 @@ def create(request):
 # 게시물 상세(detail) 뷰
 def detail(request, id):
     post = Post.objects.get(id=id)  # id에 해당하는 게시물 가져오기
+    form = CommentForm()
     context = {
         'post': post,  # 템플릿에 전달할 게시물 객체
+        'form': form,
     }
     return render(request, 'detail.html', context)  # 게시물 상세 템플릿 렌더링
 
 # 댓글 생성(comment_create) 뷰
 @login_required  # 로그인된 사용자만 접근 가능
 def comment_create(request, post_id):
+    next = request.POST.get('path_info')
+
     form = CommentForm(request.POST)  # POST 요청 데이터로 댓글 폼 생성
     if form.is_valid():  # 폼 유효성 검사
         comment = form.save(commit=False)  # 데이터 저장 전, 객체 반환
         comment.user = request.user  # 현재 로그인된 사용자를 댓글 작성자로 설정
         comment.post_id = post_id  # 댓글이 달린 게시물 설정
         comment.save()  # 댓글 저장
-        return redirect('posts:index')  # 저장 후 게시물 목록 페이지로 리다이렉트
+        return redirect(next or 'posts:detail', id=post_id)  # 저장 후 게시물 목록 페이지로 리다이렉트
+
+@login_required  # 로그인하지 않은 사용자는 로그인 페이지로 리다이렉트
+def comment_delete(request, post_id, comment_id):
+    next = request.POST.get('path_info', 'posts:index')
+    comment = Comment.objects.get(id=comment_id)  # id에 해당하는 댓글을 가져옴
+    if request.user == comment.user:  # 현재 로그인한 사용자가 댓글 작성자인지 확인
+        comment.delete()  # 댓글 삭제
+    return redirect('posts:index')
 
 # 좋아요/좋아요 취소(like) 뷰
 @login_required  # 로그인된 사용자만 접근 가능
@@ -71,3 +84,19 @@ def feed(request):
         'form': form,  # 템플릿에 전달할 폼 객체
     }
     return render(request, 'index.html', context)  # 피드 템플릿 렌더링
+
+def like_async(request, id):
+    user = request.user
+    post = Post.objects.get(id=id)
+    if user in post.like_users.all():
+        post.like_users.remove(user)
+        status = False
+    else:
+        post.like_users.add(user)
+        status = True
+    context = {
+        'post_id': id,
+        'status': status,
+        'count': len(post.like_users.all())
+    }
+    return JsonResponse(context)

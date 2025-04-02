@@ -1,4 +1,4 @@
-{% load django_bootstrap5 %}  <!-- django-bootstrap5 템플릿 태그 로드 -->
+{% load django_bootstrap5 %}
 
 <div class="card my-3 col-12 col-md-6 col-xl-4">
     <!-- 카드 헤더: 게시물 작성자 정보 -->
@@ -16,18 +16,19 @@
     <div class="card-body">
         <!-- 좋아요 상태에 따른 아이콘 표시 -->
         {% if user in post.like_users.all %}
-            <!-- 좋아요 취소 링크 -->
-            <a href="{% url 'posts:like' post.id %}" class="text-reset text-decoration-none">
-                <i class="bi bi-heart-fill" style="color: red;"></i>
-            </a>
+            <!-- 좋아요 취소 버튼 -->
+            <i class="bi like bi-heart-fill" style="color: red;" data-post-id="{{post.id}}">
+                <!-- 좋아요 수 표시 -->
+                <span style="color: black;">{{post.like_users.all|length}}</span>
+            </i>
         {% else %}
-            <!-- 좋아요 추가 링크 -->
-            <a href="{% url 'posts:like' post.id %}" class="text-reset text-decoration-none">
-                <i class="bi bi-heart"></i>
-            </a>
+            <!-- 좋아요 추가 버튼 -->
+            <i class="bi like bi-heart" data-post-id="{{post.id}}">
+                <!-- 좋아요 수 표시 -->
+                <span style="color: black;">{{post.like_users.all|length}}</span>
+            </i>
         {% endif %}
-        <!-- 좋아요 수 표시 -->
-        <span>{{post.like_users.all|length}}명이 좋아합니다.</span>
+        <span>명이 좋아합니다.</span>
         <!-- 게시물 내용 -->
         <p class="card-text">{{post.content}}</p>
         <!-- 게시물 작성 시간 -->
@@ -45,6 +46,7 @@
                 <div class="row">
                     <div class="col-9">
                         {% bootstrap_form form show_label=False wrapper_class='' %}
+                        <input type="hidden" value="{{request.path_info}}" name="path_info">  <!-- 현재 경로 전달 -->
                     </div>
                     <div class="col-2">
                         <input type="submit" class="btn btn-primary">
@@ -56,6 +58,10 @@
         <div class="mt-2">
             {% for comment in post.comment_set.all %}
                 <p>{{comment.user}} : {{comment.content}}</p>
+                {% if comment.user == user %}
+                    <!-- 댓글 삭제 링크 -->
+                    <a href="{% url 'posts:comment_delete' post.id comment.id %}">Delete</a>
+                {% endif %}
             {% endfor %}
         </div>
     </div>
