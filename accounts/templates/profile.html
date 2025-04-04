@@ -2,6 +2,38 @@
 {% load django_bootstrap5 %}
 
 {% block body %}
+    <style>
+        .col-4 {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .col-4 img {
+            transition: 0.3s ease-in-out;
+            width: 100%;
+        }
+
+        .col-4:hover img {
+            filter: blur(3px);
+            opacity: 0.7;
+        }
+
+        .overlay-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+
+        .col-4:hover .overlay-text {
+            opacity: 1;
+        }
+    </style>
     <div class="row my-3">
         <div class="col-3">
             <!-- 사용자 프로필 이미지 표시 -->
@@ -31,7 +63,27 @@
                 <!-- 게시물, 팔로워, 팔로잉 수 표시 -->
                 <div class="col-4">게시물: {{user_profile.post_set.all|length}}</div>
                 <div class="col-4">팔로워: {{user_profile.followers.all|length}}</div>
-                <div class="col-4">팔로잉: {{user_profile.followings.all|length}}</div>
+                <div class="col-4" data-bs-toggle="modal" data-bs-target="#staticBackdrop">팔로잉: {{user_profile.followings.all|length}}</div>
+                <!-- Modal -->
+                <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h1 class="modal-title fs-5" id="staticBackdropLabel">팔로잉</h1>
+                            </div>
+                            <div class="modal-body">
+                                {% for following in user_profile.followings.all %}
+                                    {{following}}
+                                    <br>
+                                {% endfor %}
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
@@ -41,6 +93,12 @@
                 <!-- 게시물 이미지 표시 및 상세 페이지 링크 -->
                 <a href="{% url 'posts:detail' post.id %}">
                     <img src="{{post.image.url}}" class="img-fluid" alt="">
+                    <div class="overlay-text">
+                        <i class="bi like bi-heart-fill"></i>
+                        {{post.like_users.all|length}}
+                        <i class="bi bi-signal"></i>
+                        {{post.comment_set.all|length}}
+                    </div>
                 </a>
             </div>
         {% endfor %}
